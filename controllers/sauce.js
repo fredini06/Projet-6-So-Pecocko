@@ -1,24 +1,13 @@
 const Thing = require('../models/Thing');
 const fs = require('fs');
 
-// exports.createSauce = (req, res, next) => {
-//   delete req.body._id;
-//   const thing = new Thing({
-//     ...req.body
-//   });
-//   thing.save()
-//     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
-//     .catch(error => res.status(400).json({ error }));
-// };
-
 exports.createSauce = (req, res, next) => {
-  console.log(req.body);
-  // const thingObject = JSON.parse(req.body.thing);
-  // delete thingObject._id;
-  delete req.body._id;
+  console.log(JSON.parse(req.body.sauce));
+  const thingObject = JSON.parse(req.body.sauce);
+  delete thingObject._id;
   const thing = new Thing({
-    ...req.body,
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    ...thingObject,
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
   });
   thing.save()
     .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
