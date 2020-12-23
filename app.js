@@ -7,7 +7,7 @@ const path = require('path');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://fred_06:fred@cluster0.orqj0.mongodb.net/<test02>?retryWrites=true&w=majority',
+mongoose.connect('mongodb+srv://fred_06:fred@cluster0.orqj0.mongodb.net/<sauces>?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
