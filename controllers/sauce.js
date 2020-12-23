@@ -51,4 +51,26 @@ exports.getAllSauces = (req, res, next) => {
     .catch(error => res.status(400).json({ error }));
 };
 
+exports.likeSauce = (req, res, next) => {
+  if(req.body.like == 1) {
+    Thing.updateOne({ _id: req.params.id }, {
+      $inc: { likes: 1 },
+      $push: { usersLiked: req.body.userId },
+      _id: req.params.id
+    })
+    .then(() => res.status(200).json({ message: 'Objet liké !'}))
+    .catch(error => res.status(400).json({ error }));
+  } else if(req.body.like == -1) {
+    Thing.updateOne({ _id: req.params.id }, {
+      $inc: { dislikes: 1 },
+      $push: { usersDisliked: req.body.userId },
+      _id: req.params.id
+    })
+    .then(() => res.status(200).json({ message: 'Objet disliké !'}))
+    .catch(error => res.status(400).json({ error }));
+  } else if(req.body.like == 0) {
+    
+  }
+}
+
 
