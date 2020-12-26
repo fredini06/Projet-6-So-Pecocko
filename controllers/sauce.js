@@ -7,6 +7,7 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
   const sauce = new Sauce({
     ...sauceObject,
+    
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
   });
   sauce.save()
@@ -15,9 +16,12 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.getOneSauce = (req, res, next) => {
-  console.log(req.body);
+  console.log('params', req.params);
   Sauce.findOne({ _id: req.params.id })
-    .then(sauce => res.status(200).json(sauce))
+    .then(sauce => {
+      res.status(200).json(sauce);
+      console.log(sauce);
+    })
     .catch(error => res.status(404).json({ error }));
 };
 
@@ -52,25 +56,55 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
-  if(req.body.like == 1) {
-    Sauce.updateOne({ _id: req.params.id }, {
-      $inc: { likes: 1 },
-      $push: { usersLiked: req.body.userId },
-      _id: req.params.id
-    })
-    .then(() => res.status(200).json({ message: 'Objet liké !'}))
-    .catch(error => res.status(400).json({ error }));
-  } else if(req.body.like == -1) {
-    Sauce.updateOne({ _id: req.params.id }, {
-      $inc: { dislikes: 1 },
-      $push: { usersDisliked: req.body.userId },
-      _id: req.params.id
-    })
-    .then(() => res.status(200).json({ message: 'Objet disliké !'}))
-    .catch(error => res.status(400).json({ error }));
-  } else if(req.body.like == 0) {
+  Sauce.findOne({ _id: req.params.id })
+  .then(() => {
+    if (req.body.like === 1){
+      // if (sauce.usersLiked.includes(req.body.userId)) {
+      //   console.log(req.body.userId);
+      // }
+        console.log(req.params.id);
+        Sauce.updateOne({ _id: req.params.id }, { $inc: { likes: 1 }, $addToSet: { usersLiked: req.body.userId }})
+          .then(() => {
+            res.status(201).json({ message: 'like enregistré !' });
+            console.log('like enregistré !');
+          })
+          .catch(() => res.status(400).json({ error: 'La syntaxe de la requête est erronée' }));
+      }
     
-  }
+    if (req.body.like === -1) {
+      console.log('ok disliked');
+      Sauce.updateOne({ _id: req.params.id }, { $inc: { dislikes: 1 }, $addToSet: { usersDisliked: req.body.userId }})
+      .then(() => res.status(201).json({ message: 'dislike enregistré !' }))
+      .catch(() => res.status(400).json({ error: 'La syntaxe de la requête est erronée' }));
+    }
+    if (req.body.like === 0) {
+      console.log('0');
+    }
+  })
+  .catch(error => res.status(400).json({ error: 'Erreur' }));
 }
 
+
+
+// exports.likeSauce = (req, res, next) => {
+//   if(req.body.like == 1) {
+//     Sauce.updateOne({ _id: req.params.id }, {
+//       $inc: { likes: 1 },
+//       $push: { usersLiked: req.body.userId },
+//       _id: req.params.id
+//     })
+//     .then(() => res.status(200).json({ message: 'Objet liké !'}))
+//     .catch(error => res.status(400).json({ error }));
+//   } else if(req.body.like == -1) {
+//     Sauce.updateOne({ _id: req.params.id }, {
+//       $inc: { dislikes: 1 },
+//       $push: { usersDisliked: req.body.userId },
+//       _id: req.params.id
+//     })
+//     .then(() => res.status(200).json({ message: 'Objet disliké !'}))
+//     .catch(error => res.status(400).json({ error }));
+//   } else if(req.body.like == 0) {
+    
+//   }
+// }
 
